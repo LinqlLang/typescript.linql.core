@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "Kris Sodroski",
   "license": "MIT",
+  "homepage": "https://github.com/LinqlLang/Linql",
   "repository": {
     "type": "git",
     "url": "https://github.com/LinqlLang/typescript.linql.core"
