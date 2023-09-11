@@ -1,104 +1,202 @@
 # Linql
 
-Linql is a next generation graph api library.  It's primary goal is to provide language-native graph api integration to achieve consistency and scale across the web. 
+`Linql` is a next generation graph api library.  It's primary goal is to provide language-native graph api integration to achieve consistency and scale across the web. 
 
-> Linql is currently in alpha1.  Support for C# and Typescript may be production ready and significantly improve your web development experience. 
+These repos focus on Typescript/Javascript implementations.  
 
-[Read the white paper](./WhitePaper.md)  
+[Linql Overview](../README.md)
 
-## Support
+## Example Usage
 
-If Linql resonates with you, `please consider supporting the project, as the entire stack is maintained by a single developer`.  
-
-### Ethereum
-
-```
-0x50373B51Cb601827CcC1Dc5472251031d2fdBF89
-```
-
-### Github Sponsor
-You can also [sponsor me on my profile](https://github.com/TheKrisSodroski) or by using the [sponsorship button](https://github.com/sponsors/TheKrisSodroski) in this repo if you wish to `receive individualized support`, `prioritize features`, or `advertise your support for Linql`. 
-
-### Hire Me
-
-[LinkedIn](https://www.linkedin.com/in/kris-sodroski-60001480/)
-
-[sodroski@bu.edu](mailto:sodroski@bu.edu)
-
-## Unparalleled Developer Experience 
-
-Because Linql is language-native, it is small, light-weight, and robust.  
-
-Using Linql allows you to interact with your api with compile-time safety and full typeahead support, significantly reducing developer time in comparison to other systems.
-
-#### **`Typescript`**
-
-![Typescript typeahead](./assets/typeahead.ts.gif)
-
-#### **`C#`**
-
-![C# typeahead](./assets/typeahead.csharp.gif)
-
-#### **`Python`**
-
-![Python typeahead](./assets/typeahead.python.gif)
-## Client Examples
-
-#### **`C#`**
-```cs 
-List<string> codesICareAbout = new List<string>() { "al", "ma" };
-
-List<State> statesICareAbout = await states
-.Where(r => codesICareAbout.Select(t => t.ToUpper()).Contains(r.State_Code))
-.ToListAsync();
-```
-
-#### **`Typescript`**
 ```typescript
-this.CodesICareAbout = ["al", "ma"];
+import { LinqlSearch, LinqlContext } from 'linql.client';
 ...
-const statesICareAbout: Array<State> = search
-.Where(r => this.CodesICareAbout.Select(t => t.ToUpper()).Contains(r.State_Code!))
-.ToListAsync();
-
+const context = new LinqlContext(LinqlSearch, "https://localhost:7113", { this: this });
+const search = this.customContext.Set<State>(State, { this: this });
+search.Where(r => r.State_Code!.Contains("A")).ToListAsyncSearch();
 ```
 
-#### **`Python`**
-```python
-statesICareAbout = ["al", "ma"]
-search.Where(lambda r: any(lambda x: r.State_Code in x, map(lambda t: t.upper(), statesICareAbout))).ToListAsync()
+
+## Current Support
+
+| Environment | Client                                      | Server      | Notes                                                                                                                   | Example                     |
+| ----------- | ------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Node        | [Full](./projects/linql.client-node-fetch/) | Not Started | [linql.client-fetch](./projects/linql.client-fetch/) and [linql.client-node-fetch](./projects/linql.client-node-fetch/) | [link](./examples/node/)    |
+| Angular     | [Full](./projects/linql.client-angular/)    | n/a         | Has native framework wrapper                                                                                            | [link](./examples/angular/) |
+| React       | [Full](./projects/linql.client-fetch/)      | n/a         | Needs native framework wr apper                                                                                         |
+| Vanilla     | [Full](./projects/linql.client-fetch/)      | n/a         |                                                                                                                         |
+
+## Network Implementation
+
+| Package                 | Implementation       | Import                                                           |
+| ----------------------- | -------------------- | ---------------------------------------------------------------- |
+| linql.client            | Native fetch         | `import { LinqlContext } from linql.client;`                     |
+| linql.client-angular    | @angular/common/http | `import { LinqlContext } from linql.client-angular;`             |
+| linql.client-fetch      | Native Fetch         | `import { FetchLinqlContext } from linql.client-fetch;`          |
+| linql.client-node-fetch | node-fetch           | `import { NodeFetchLinqlContext } from linql.client-node-fetch;` |
+
+
+# Concepts
+## TypeName Resolution 
+
+When an `object` is used within a LinqlSearch, the LinqlContext's `GetTypeName` function is used to resolve the name of that object.  By default, `GetTypeName` implementation is as follows: 
+
+- Check for the existance of a static `Type` member on the constructor.  
+- If static `Type` does not exist, choose `constructor.name`.
+
+The static `Type` member, or some custom implementation, **is required to support minified code**, as **class names are generally clobbered** during minification.
+
+#### **`ModelExample.ts`**
+```typescript
+export class State
+{
+  //Default way to handle code miniification 
+  static Type = "State";
+  StateID!: number;
+  StateCode!: string;
+  State_Name!: string;
+}
 ```
 
-#### **`Java`**
-```java
-List<String> codesICareAbout = Arrays.asList("al", "ma");
+## EndPoint Resolution
 
-List<State> statesICareAbout = states
-.stream()
-.filter(r => codesICareAbout.stream().map(t => t.toUpperCase()).collect(Collectors.toList()).contains(r))
-.collect(Collectors.toList());
+By default, the generated route is `linql/{GetTypeName(ObjectConstructor)}`.
+
+The `State` object used above would generate `linql/State`, as the static `Type` member is equal to `State`.
+
+## Idempotent
+
+`Linql` is **idempotent**, allowing for LinqlSearches to be built on top of one another.
+
+```typescript
+const search = this.LinqlContext.Set<State>(State, { this: this });
+const baseQuery = search.Where(r => r.StateCode.Contains("a"));
+//branch 2 queries off the base query
+const search2 = baseQuery.Where(r => r.State_Name!.ToLower().Contains(this.StateSearch));
+const search3 = baseQuery.Where(r => r.State_Name.Contains("b"));
 ```
 
-## Language Support
+## Linq Emulation
 
-| Language                             | Environment | Client                                                       | Server                                           | Notes                                                                                                                                         |
-| ------------------------------------ | ----------- | ------------------------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| C#                                   |             | [Full Alpha](./C%23/Linql.Client/)                           | [Full Alpha](./C%23/Linql.Server/)               |
-| [Javascript](./Typescript/README.md) |             |                                                              |                                                  | Uses Linq emulator                                                                                                                            |
-| -                                    | Node        | [Full Alpha](./Typescript/projects/linql.client-node-fetch/) | Not Started                                      | [linql.client-fetch](./Typescript/projects/linql.client-fetch/) and [linql.client-node-fetch](./Typescript/projects/linql.client-node-fetch/) |
-| -                                    | Angular     | [Full Alpha](./Typescript/projects/linql.client-angular/)    | n/a                                              | Has native framework wrapper                                                                                                                  |
-| -                                    | React       | [Full Alpha](./Typescript/projects/linql.client-fetch/)      | n/a                                              | Needs native framework wr apper                                                                                                               |
-| -                                    | Vanilla     | [Full Alpha](./Typescript/projects/linql.client-fetch/)      | n/a                                              |
-| Python                               |             | [Partial Alpha](./Python/)                                   | [In Progress](./Python/linql-server-sqlalchemy/) |                                                                                                                                               |
-| Java                                 |             | Not Started                                                  | Not Started                                      |
+`Linql` comes bundled with a naiive implementation of linq, which adds additional methods to `Array` and `String`.
 
-## Model Generation 
+For a full list of available functions: [LinqlSearch](./projects/linql.client/src/lib/ALinqlSearch.ts), [Array](./projects//linql.core/src/lib/Extensions/Array.ts), [String](./projects/linql.core/src/lib/Extensions/String.ts).
 
-Linql is very powerful if there is automatic model generation for your consumers to use.  This can be accomplished with the [Linql.ModelGenerator](https://github.com/TheKrisSodroski/Linql.ModelGenerator).
+```typescript
+const inMemoryArray: Array<State> = [...];
+const inMemoryMax = intArray.Where(r => r.StateID > 2).Max();
 
-## Acknowledgements 
+const apiArray = this.LinqlContext.Set<State>(State, { this: this });
+const apiMax = await apiArray.Where(r => r.StateID > 2).MaxAsync();
+```
 
-Big thanks to: 
-- [Jeff Bender](https://github.com/jeffbender) for his unwavering support and mentorship
-- [Manjot Chahal](https://www.linkedin.com/in/manjot-chahal-96740198/) for scoping out acorn
-- [Sushmita Chaudhari](https://www.linkedin.com/in/sushmitachaudhari/) for scoping out System.Text.Json in it's prerelease 
+## Using Variables
+
+Javascript has no access to the stack at runtime, and therefore it is **impossible to use locally scoped variables inside of a linql search**.  
+
+To circumnavigate this, `Linql` emulates the stack with the *incantation* `{ this: this }`. 
+
+Other variables can be stuck into the stack, but due to code minification, this is not advised. 
+
+```typescript
+export class SomeClass
+{
+    StatesICareAbout: Array<string> = ["ma", "al"];
+    ...
+    async GetData()
+    {
+        //Define this inside of the stack with the incantation 
+        const search = this.LinqlContext.Set<State>(State, { this: this });
+        //Use the variable by accessing it through 'this'
+        const results = await search.Where(r => this.StatesICareAbout.Contains(r.StateCode)).ToListAsync();
+    }
+}
+```
+## Nullable Types
+
+`Nullable` members are operated on using the `non-null asertion operator (!)`  on `strings` and with `INullable` casting for non-string types.
+
+```typescript
+//Ignore nullable string
+search.Where(r => r.StringProperty!.Contains("A")).ToListAsync();
+//Check for not null and then cast to INullable
+const notNull = search.Where(r => r.NullableInteger !== undefined && (r.NullableInteger as any as INullable<number>).Value === 1);
+//Get where Is Null
+const isNull = search.Where(r => r.NullableInteger === undefined);
+```
+## Dynamic Queries
+
+`Linql` methods accept both `arrow functions` and `strings` as predicates.  This can allow you to do dynamic generation of queries. 
+
+```typescript
+const value = 1;
+const method = "<";
+search.Where(`r => r.Integer ${method} ${value}`).ToListAsync();
+```
+
+## Custom LinqlContext 
+
+Overriding the default `LinqlContext` allows customized endpoint generation, authentication, and `TypeName` resolution.  To do so, simply inherit from the default `LinqlContext` from the linql package that matches your usecase. 
+
+In the below example, we show a `CustomLinqlContext` which overrides the route generation, overrides the `TypeName Resolution`, and adds a `Batch` functionality.
+
+#### **`CustomLinqlContext.ts`**
+```typescript
+export class CustomLinqlContext extends LinqlContext
+{
+    override GetRoute(Search: LinqlSearch<any>)
+    {
+        if (Search.Type.TypeName)
+        {
+            return Search.Type.TypeName;
+        }
+        return "";
+    }
+    
+    async Batch<T>(...values: Array<T>): Promise<Array<T>>
+    {
+        const searches = values.Where(r => (r as Object).constructor === this.LinqlSearchType) as Array<ALinqlSearch<any>>;
+        const sanitizedSearches = searches.map(r => this.GetOptimizedSearch(r));
+        const results = await lastValueFrom(this.Client.post(`${ this.BaseUrl }Batch`, sanitizedSearches));
+        return results as Array<T>;
+    }
+
+    override GetTypeName(Type: string | GenericConstructor<any>): string
+    {
+        if (typeof Type !== "string")
+        {
+            const anyCast = Type as any;
+            const type = anyCast["Type"];
+
+            if (type)
+            {
+                return type;
+            }
+        }
+        return super.GetTypeName(Type);
+    }
+
+}
+```
+
+## Batching
+
+The modern web is filled with many small requests.  If you check your devtools at anytime, it's filled with network requests.
+
+To alleviate this issue, `Batch` functionality is strongly recommended, and must be enabled on your [server](../C%23/Linql.Server/README.md).
+
+If your server supports it, you can batch many requests together into a single network request, and the `Linql` server will return all the results of a Batch in a single request. 
+
+The above example shows a naiive implementation of how to implement `Batch` that hits the `/Batch` endpoint of the backend. 
+
+This functionality may be migrated into the core of `Linql` in the future, and include functionality to also accept non-linql requests and zip the results together, as well as include better type definitions that can infer .
+
+```typescript
+const searches = [
+    search.ToListAsyncSearch(),
+    search.Where(r => r.State_Code!.Contains("A")).ToListAsyncSearch(),
+    search.Where(r => r.State_Name!.ToLower().Contains(this.StateSearch)),
+    search.FirstOrDefaultSearch()
+];
+const batchResults = await this.customContext.Batch(searches);
+```
