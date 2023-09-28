@@ -12,7 +12,7 @@ declare global
         Count: number;
         Distinct(): Array<T>;
         FirstOrDefault(Expression?: BooleanExpression<T>): T;
-        GroupBy<S>(Expression: AnyExpression<S>): Array<IGrouping<S, T>>;
+        GroupBy<S>(Expression: TransformExpression<T, S>): Array<IGrouping<S, T>>;
         LastOrDefault(Expression?: BooleanExpression<T>): T;
         Max(Expression: TransformExpression<T, number>): number;
         MaxBy<S>(Expression: TransformExpression<T, S>): T;
