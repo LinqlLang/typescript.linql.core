@@ -10,14 +10,29 @@ export class LinqlSearch
     {
     }
 
-    Merge(SearchToMerge: LinqlSearch)
+    Merge(SearchToMerge: LinqlSearch, FlattenTopLevelFunctions: boolean = false)
     {
         this.Expressions = this.Expressions?.map(r => r.Clone());
-        const lastExpression = this.Expressions?.FirstOrDefault()?.GetLastExpressionInNextChain();
 
-        if (lastExpression)
+        if (FlattenTopLevelFunctions)
         {
-            lastExpression.Next = SearchToMerge.Expressions?.FirstOrDefault()?.Next?.Clone();
+            const lastExpression = this.Expressions?.LastOrDefault()?.GetLastExpressionInNextChain();
+
+            if (lastExpression)
+            {
+                lastExpression.Next = SearchToMerge.Expressions?.FirstOrDefault()?.Next?.Clone();
+            }
         }
+        else
+        {
+            const afterBaseType = SearchToMerge.Expressions?.slice(1);
+
+            if (afterBaseType)
+            {
+                this.Expressions?.push(...afterBaseType);
+            }
+        }
+
+
     }
 }
