@@ -14,7 +14,7 @@ export class LinqlSearch
     {
         this.Expressions = this.Expressions?.map(r => r.Clone());
 
-        if (FlattenTopLevelFunctions)
+        if (!FlattenTopLevelFunctions)
         {
             const lastExpression = this.Expressions?.LastOrDefault()?.GetLastExpressionInNextChain();
 
