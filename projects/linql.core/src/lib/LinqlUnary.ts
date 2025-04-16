@@ -20,4 +20,10 @@ export class LinqlUnary extends LinqlExpression
         return unary as this;
     }
 
+    static isLinqlUnary(Expression: LinqlExpression): Expression is LinqlUnary
+    {
+        return Expression.$type === "LinqlUnary";
+    }
+
+
 }

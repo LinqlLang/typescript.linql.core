@@ -17,4 +17,10 @@ export class LinqlParameter extends LinqlExpression
         return param as this;
     }
 
+    static isLinqlParameter(Expression: LinqlExpression): Expression is LinqlParameter
+    {
+        return Expression.$type === "LinqlParameter";
+    }
+
+
 }

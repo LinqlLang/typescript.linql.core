@@ -17,4 +17,8 @@ export class LinqlProperty extends LinqlExpression
         return clone as this;
     }
 
+    static isLinqlProperty(Expression: LinqlExpression): Expression is LinqlProperty
+    {
+        return Expression.$type === "LinqlProperty";
+    }
 }

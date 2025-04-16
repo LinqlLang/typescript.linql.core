@@ -22,4 +22,10 @@ export class LinqlObject<T> extends LinqlExpression
         return obj as this;
     }
 
+    static isLinqlObject(Expression: LinqlExpression): Expression is LinqlObject<any>
+    {
+        return Expression.$type === "LinqlObject";
+    }
+
+
 }

@@ -22,4 +22,9 @@ export class LinqlConstant extends LinqlExpression
         constant.Next = this.Next?.Clone();
         return constant as this;
     }
+
+    static isLinqlConstant(Expression: LinqlExpression): Expression is LinqlConstant
+    {
+        return Expression.$type === "LinqlConstant";
+    }
 }

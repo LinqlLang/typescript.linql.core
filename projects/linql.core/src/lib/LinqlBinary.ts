@@ -22,4 +22,10 @@ export class LinqlBinary extends LinqlExpression
         binary.Next = this.Next?.Clone();
         return binary as this;
     }
+
+
+    static isLinqlBinary(Expression: LinqlExpression): Expression is LinqlBinary
+    {
+        return Expression.$type === "LinqlBinary";
+    }
 }

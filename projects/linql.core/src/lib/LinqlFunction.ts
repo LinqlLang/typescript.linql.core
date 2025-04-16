@@ -20,4 +20,9 @@ export class LinqlFunction extends LinqlExpression
         return linqlFunction as this;
     }
 
+    static isLinqlFunction(Expression: LinqlExpression): Expression is LinqlFunction
+    {
+        return Expression.$type === "LinqlFunction";
+    }
+
 }

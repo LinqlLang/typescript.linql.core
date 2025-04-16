@@ -19,4 +19,10 @@ export class LinqlLambda extends LinqlExpression
         return clone as this;
     }
 
+    static isLinqlLambda(Expression: LinqlExpression): Expression is LinqlLambda
+    {
+        return Expression.$type === "LinqlLambda";
+    }
+
+
 }
