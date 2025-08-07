@@ -2,6 +2,7 @@ export * from "./Extensions/Array";
 export * from "./Extensions/IGrouping";
 export * from "./Extensions/INullable";
 export * from "./Extensions/String";
+export * from "./Extensions/StringStatic";
 export * from "./Extensions/Types";
 export * from "./ITypeNameProvider";
 export * from "./LinqlAnonymousObject";
