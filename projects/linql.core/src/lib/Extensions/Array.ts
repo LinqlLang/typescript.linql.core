@@ -9,7 +9,7 @@ declare global
         Any(Expression?: BooleanExpression<T>): boolean;
         Average(Expression?: TransformExpression<T, number>): number;
         Contains(ItemToCompare: T): boolean;
-        Count: number;
+        Count(): number;
         Distinct(): Array<T>;
         FirstOrDefault(Expression?: BooleanExpression<T>): T;
         GroupBy<S>(Expression: TransformExpression<T, S>): Array<IGrouping<S, T>>;
@@ -38,6 +38,11 @@ Array.prototype.Contains = function <T>(ItemToCompare: T | undefined)
     {
         return this.indexOf(ItemToCompare) > -1;
     }
+};
+
+Array.prototype.Count = function ()
+{
+    return this.length;
 };
 
 Array.prototype.Any = function <T>(Expression?: BooleanExpression<T>)
