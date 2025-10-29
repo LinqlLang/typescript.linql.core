@@ -40,6 +40,7 @@ export class LinqlSearch extends LinqlExpression
     {
         const clone = new LinqlSearch(this.Type);
         clone.Expressions = this.Expressions?.map(r => r.Clone());
+        clone.Next = this.Next?.Clone();
         return clone as this;
     }
 }
