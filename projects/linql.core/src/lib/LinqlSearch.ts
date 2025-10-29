@@ -7,9 +7,12 @@ export class LinqlSearch extends LinqlExpression
 
     public Expressions: Array<LinqlExpression> | undefined;
 
-    constructor(public Type: LinqlType)
+    public Type: LinqlType;
+
+    constructor(Type: LinqlType)
     {
         super();
+        this.Type = Type;
     }
 
     Merge(SearchToMerge: LinqlSearch, FlattenTopLevelFunctions: boolean = false)
