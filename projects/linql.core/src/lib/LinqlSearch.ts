@@ -1,13 +1,15 @@
 import { LinqlExpression } from "./LinqlExpression";
 import { LinqlType } from "./LinqlType";
 
-export class LinqlSearch 
+export class LinqlSearch extends LinqlExpression
 {
+    "$type": string = "LinqlSearch";
 
     public Expressions: Array<LinqlExpression> | undefined;
 
     constructor(public Type: LinqlType)
     {
+        super();
     }
 
     Merge(SearchToMerge: LinqlSearch, FlattenTopLevelFunctions: boolean = false)
@@ -32,5 +34,12 @@ export class LinqlSearch
                 this.Expressions?.push(...afterBaseType);
             }
         }
+    }
+
+    public override Clone(): this
+    {
+        const clone = new LinqlSearch(this.Type);
+        clone.Expressions = this.Expressions?.map(r => r.Clone());
+        return clone as this;
     }
 }
