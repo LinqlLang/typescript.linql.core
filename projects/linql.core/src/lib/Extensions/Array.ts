@@ -206,10 +206,9 @@ Array.prototype.Select = function <T, S>(Expression: TransformExpression<T, S>)
 {
     return this.map(Expression);
 }
-Array.prototype.SelectMany = function <T, S>(Expression: OneToManyExpression<T, S>)
+Array.prototype.SelectMany = function <T, S>(Expression: OneToManyExpressionProject<T, S>)
 {
-    const mapOfMaps: Array<Array<S>> = this.map(Expression);
-    return mapOfMaps.reduce((left, right) => left.concat(...right));
+    return this.flatMap(x => Expression(x));
 }
 
 Array.prototype.Skip = function <T, S>(Count: number)

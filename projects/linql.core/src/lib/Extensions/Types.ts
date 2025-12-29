@@ -7,5 +7,5 @@ export declare type OneToManyExpression<T, S> = (r: T) => Array<S>;
 
 export type OneToManyExpressionProject<T, S> =
     (item: T, index?: number, source?: Array<T>) =>
-        Iterable<S> | ArrayLike<S> | null | undefined;
+        Array<S>;
 
