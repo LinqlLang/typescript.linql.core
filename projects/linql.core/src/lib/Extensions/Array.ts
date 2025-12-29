@@ -1,5 +1,5 @@
 import { IGrouping } from "./IGrouping";
-import { AnyExpression, BooleanExpression, OneToManyExpression, TransformExpression } from "./Types";
+import { AnyExpression, BooleanExpression, OneToManyExpression, OneToManyExpressionProject, TransformExpression } from "./Types";
 
 declare global
 {
@@ -19,7 +19,7 @@ declare global
         Min(Expression: TransformExpression<T, number>): number;
         MinBy<S>(Expression: TransformExpression<T, S>): T;
         Select<S>(Expression: TransformExpression<T, S>): Array<S>;
-        SelectMany<S>(Expression: OneToManyExpression<T, S>): Array<S>;
+        SelectMany<S>(Expression: OneToManyExpressionProject<T, S>): Array<S>;
         Skip(Count: number): Array<T>;
         Sum(Expression?: TransformExpression<T, number>): number;
         Take(Count: number): Array<T>;
