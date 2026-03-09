@@ -2,7 +2,7 @@
   "name": "linql.core",
   "version": "1.0.0",
   "author": "Kris Sodroski",
-  "license": "MIT",
+  "license": "Custom",
   "homepage": "https://github.com/LinqlLang/Linql",
   "repository": {
     "type": "git",
@@ -35,6 +35,6 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "ng-packagr": "^19.1.2",
-    "typescript": "^5.4.0" 
-   }
+    "typescript": "^5.4.0"
+  }
 }

@@ -2,7 +2,7 @@
   "name": "linql.core",
   "version": "1.0.0",
   "author": "Kris Sodroski",
-  "license": "MIT",
+  "license": "Custom",
   "homepage": "https://github.com/LinqlLang/Linql",
   "repository": {
     "type": "git",

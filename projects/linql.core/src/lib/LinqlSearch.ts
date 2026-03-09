@@ -17,11 +17,10 @@ export class LinqlSearch extends LinqlExpression
 
     Merge(SearchToMerge: LinqlSearch, FlattenTopLevelFunctions: boolean = false)
     {
-        this.Expressions = this.Expressions?.map(r => r.Clone());
-
+        const newSearch = this.Clone();
         if (!FlattenTopLevelFunctions)
         {
-            const lastExpression = this.Expressions?.LastOrDefault()?.GetLastExpressionInNextChain();
+            const lastExpression = newSearch.Expressions?.LastOrDefault()?.GetLastExpressionInNextChain();
 
             if (lastExpression)
             {
@@ -34,9 +33,10 @@ export class LinqlSearch extends LinqlExpression
 
             if (afterBaseType)
             {
-                this.Expressions?.push(...afterBaseType);
+                newSearch.Expressions?.push(...afterBaseType);
             }
         }
+        return newSearch;
     }
 
     public override Clone(): this
